@@ -2,12 +2,13 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { Timer } from "three/addons/misc/Timer.js";
 import GUI from "lil-gui";
+import { CameraHelper, PointLightHelper } from "three";
 
 /**
  * Base
  */
 // Debug
-const gui = new GUI();
+const gui = new GUI({ closeFolders: true }).close();
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
@@ -218,7 +219,7 @@ const door = new THREE.Mesh(
     metalnessMap: doorMetalnessTexture,
     roughnessMap: doorRoughnessTexture,
     displacementScale: 0.15,
-    displacementBias: -0.04
+    displacementBias: -0.04,
   })
 );
 door.position.y = 1;
@@ -293,13 +294,18 @@ scene.add(house);
  * Lights
  */
 // Ambient light
-const ambientLight = new THREE.AmbientLight("#ffffff", 0.5);
+const ambientLight = new THREE.AmbientLight("#86cdff", 0.275);
 scene.add(ambientLight);
 
 // Directional light
-const directionalLight = new THREE.DirectionalLight("#ffffff", 1.5);
+const directionalLight = new THREE.DirectionalLight("#86cdff", 1);
 directionalLight.position.set(3, 2, -8);
 scene.add(directionalLight);
+
+// Door light
+const doorLight = new THREE.PointLight("#ff7d46", 5);
+doorLight.position.set(0, 2.2, 2.5)
+house.add(doorLight)
 
 /**
  * Sizes
