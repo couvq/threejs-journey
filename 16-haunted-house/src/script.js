@@ -16,14 +16,76 @@ const canvas = document.querySelector("canvas.webgl");
 const scene = new THREE.Scene();
 
 /**
+ * Textures
+ */
+const textureLoader = new THREE.TextureLoader();
+
+// Floor texture
+const floorAlphaTexture = textureLoader.load("./floor/alpha.jpg");
+const floorColorTexture = textureLoader.load(
+  "./floor/coast_sand_rocks/coast_sand_rocks_02_diff_1k.jpg"
+);
+const floorARMTexture = textureLoader.load(
+  "./floor/coast_sand_rocks/coast_sand_rocks_02_arm_1k.jpg"
+);
+const floorNormalTexture = textureLoader.load(
+  "./floor/coast_sand_rocks/coast_sand_rocks_02_nor_gl_1k.jpg"
+);
+const floorDisplacementTexture = textureLoader.load(
+  "./floor/coast_sand_rocks/coast_sand_rocks_02_disp_1k.jpg"
+);
+
+// needed bc the texture is way too big on its own
+floorColorTexture.repeat.set(8, 8);
+floorARMTexture.repeat.set(8, 8);
+floorNormalTexture.repeat.set(8, 8);
+floorDisplacementTexture.repeat.set(8, 8);
+
+floorColorTexture.wrapS = THREE.RepeatWrapping;
+floorARMTexture.wrapS = THREE.RepeatWrapping;
+floorNormalTexture.wrapS = THREE.RepeatWrapping;
+floorDisplacementTexture.wrapS = THREE.RepeatWrapping;
+
+floorColorTexture.wrapT = THREE.RepeatWrapping;
+floorARMTexture.wrapT = THREE.RepeatWrapping;
+floorNormalTexture.wrapT = THREE.RepeatWrapping;
+floorDisplacementTexture.wrapT = THREE.RepeatWrapping;
+
+floorColorTexture.colorSpace = THREE.SRGBColorSpace;
+
+/**
  * House
  */
 const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(20, 20),
-  new THREE.MeshStandardMaterial()
+  new THREE.PlaneGeometry(20, 20, 100, 100),
+  new THREE.MeshStandardMaterial({
+    alphaMap: floorAlphaTexture,
+    transparent: true,
+    map: floorColorTexture,
+    aoMap: floorARMTexture,
+    roughnessMap: floorARMTexture,
+    metalnessMap: floorARMTexture,
+    normalMap: floorNormalTexture,
+    displacementMap: floorDisplacementTexture,
+    displacementScale: 0.25,
+    displacementBias: -0.2
+  })
 );
 floor.rotateX(-Math.PI * 0.5);
 scene.add(floor);
+
+gui
+  .add(floor.material, "displacementScale")
+  .min(0)
+  .max(1)
+  .step(0.001)
+  .name("floor_displacementScale");
+gui
+  .add(floor.material, "displacementBias")
+  .min(-1)
+  .max(1)
+  .step(0.001)
+  .name("floor_displacementBias");
 
 const houseWidth = 4;
 const houseHeight = 2.5;
@@ -81,7 +143,7 @@ const graveMaterial = new THREE.MeshStandardMaterial();
 const graves = new THREE.Group();
 scene.add(graves);
 
-const numGraves = 40
+const numGraves = 40;
 for (let i = 0; i < numGraves; i++) {
   const angle = Math.random() * Math.PI * 2;
   const radius = 3 + Math.random() * 4;
@@ -91,9 +153,9 @@ for (let i = 0; i < numGraves; i++) {
   grave.position.x = x;
   grave.position.z = z;
   grave.position.y = Math.random() * 0.4;
-  grave.rotation.x = (Math.random() - 0.5) * 0.4
-  grave.rotation.y = (Math.random() - 0.5) * 0.4
-  grave.rotation.z = (Math.random() - 0.5) * 0.4
+  grave.rotation.x = (Math.random() - 0.5) * 0.4;
+  grave.rotation.y = (Math.random() - 0.5) * 0.4;
+  grave.rotation.z = (Math.random() - 0.5) * 0.4;
   graves.add(grave);
 }
 
