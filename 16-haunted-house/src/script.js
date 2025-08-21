@@ -74,13 +74,15 @@ const floor = new THREE.Mesh(
 floor.rotateX(-Math.PI * 0.5);
 scene.add(floor);
 
-gui
+const floorFolder = gui.addFolder('floor')
+
+floorFolder
   .add(floor.material, "displacementScale")
   .min(0)
   .max(1)
   .step(0.001)
   .name("floor_displacementScale");
-gui
+floorFolder
   .add(floor.material, "displacementBias")
   .min(-1)
   .max(1)
