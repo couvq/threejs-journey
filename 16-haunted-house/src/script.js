@@ -1,8 +1,8 @@
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { Timer } from "three/addons/misc/Timer.js";
 import GUI from "lil-gui";
-import { CameraHelper, PointLightHelper } from "three";
+import * as THREE from "three";
+import { PointLight, PointLightHelper } from "three";
+import { Timer } from "three/addons/misc/Timer.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 /**
  * Base
@@ -304,8 +304,14 @@ scene.add(directionalLight);
 
 // Door light
 const doorLight = new THREE.PointLight("#ff7d46", 5);
-doorLight.position.set(0, 2.2, 2.5)
-house.add(doorLight)
+doorLight.position.set(0, 2.2, 2.5);
+house.add(doorLight);
+
+// Ghosts
+const ghost1 = new PointLight("#8800ff", 6);
+const ghost2 = new PointLight("#ff0088", 6);
+const ghost3 = new PointLight("#ff0000", 6);
+scene.add(ghost1, ghost2, ghost3);
 
 /**
  * Sizes
@@ -366,6 +372,22 @@ const tick = () => {
   // Timer
   timer.update();
   const elapsedTime = timer.getElapsed();
+
+  // Ghosts
+  const ghost1Angle = elapsedTime * 0.5
+  ghost1.position.x = Math.cos(ghost1Angle) * 4
+  ghost1.position.z = Math.sin(ghost1Angle) * 4
+  ghost1.position.y = Math.sin(elapsedTime) * Math.sin(2.34 * elapsedTime) * Math.sin(3.45 * elapsedTime)
+
+  const ghost2Angle = - elapsedTime * 0.38
+  ghost2.position.x = Math.cos(ghost2Angle) * 5
+  ghost2.position.z = Math.sin(ghost2Angle) * 5
+  ghost2.position.y = Math.sin(elapsedTime) * Math.sin(2.34 * elapsedTime) * Math.sin(3.45 * elapsedTime)
+
+  const ghost3Angle = elapsedTime * 0.23
+  ghost3.position.x = Math.cos(ghost3Angle) * 5
+  ghost3.position.z = Math.sin(ghost3Angle) * 5
+  ghost3.position.y = Math.sin(elapsedTime) * Math.sin(2.34 * elapsedTime) * Math.sin(3.45 * elapsedTime)
 
   // Update controls
   controls.update();
