@@ -1,6 +1,6 @@
 import GUI from "lil-gui";
 import * as THREE from "three";
-import { PointLight, PointLightHelper } from "three";
+import { CameraHelper, DirectionalLightHelper, PCFSoftShadowMap, PointLight, Vector3 } from "three";
 import { Timer } from "three/addons/misc/Timer.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
@@ -364,6 +364,42 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 /**
+ * Shadows
+ */
+renderer.shadowMap.enabled = true
+renderer.shadowMap.type = PCFSoftShadowMap
+
+// Cast & receive
+directionalLight.castShadow = true
+ghost1.castShadow = true
+ghost2.castShadow = true
+ghost3.castShadow = true
+walls.castShadow = true
+walls.receiveShadow = true
+roof.castShadow = true
+floor.receiveShadow = true
+graves.children.forEach(grave => {
+    grave.castShadow = true
+    grave.receiveShadow = true
+})
+
+// Mapping
+directionalLight.shadow.mapSize.set(256, 256)
+directionalLight.shadow.camera.top = 8
+directionalLight.shadow.camera.right = 8
+directionalLight.shadow.camera.bottom = -8
+directionalLight.shadow.camera.left = -8
+directionalLight.shadow.camera.near = 1
+directionalLight.shadow.camera.far = 20
+
+ghost1.shadow.mapSize.set(256, 256)
+ghost1.shadow.camera.far = 10
+ghost2.shadow.mapSize.set(256, 256)
+ghost2.shadow.camera.far = 10
+ghost3.shadow.mapSize.set(256, 256)
+ghost3.shadow.camera.far = 10
+
+/**
  * Animate
  */
 const timer = new Timer();
@@ -374,20 +410,29 @@ const tick = () => {
   const elapsedTime = timer.getElapsed();
 
   // Ghosts
-  const ghost1Angle = elapsedTime * 0.5
-  ghost1.position.x = Math.cos(ghost1Angle) * 4
-  ghost1.position.z = Math.sin(ghost1Angle) * 4
-  ghost1.position.y = Math.sin(elapsedTime) * Math.sin(2.34 * elapsedTime) * Math.sin(3.45 * elapsedTime)
+  const ghost1Angle = elapsedTime * 0.5;
+  ghost1.position.x = Math.cos(ghost1Angle) * 4;
+  ghost1.position.z = Math.sin(ghost1Angle) * 4;
+  ghost1.position.y =
+    Math.sin(elapsedTime) *
+    Math.sin(2.34 * elapsedTime) *
+    Math.sin(3.45 * elapsedTime);
 
-  const ghost2Angle = - elapsedTime * 0.38
-  ghost2.position.x = Math.cos(ghost2Angle) * 5
-  ghost2.position.z = Math.sin(ghost2Angle) * 5
-  ghost2.position.y = Math.sin(elapsedTime) * Math.sin(2.34 * elapsedTime) * Math.sin(3.45 * elapsedTime)
+  const ghost2Angle = -elapsedTime * 0.38;
+  ghost2.position.x = Math.cos(ghost2Angle) * 5;
+  ghost2.position.z = Math.sin(ghost2Angle) * 5;
+  ghost2.position.y =
+    Math.sin(elapsedTime) *
+    Math.sin(2.34 * elapsedTime) *
+    Math.sin(3.45 * elapsedTime);
 
-  const ghost3Angle = elapsedTime * 0.23
-  ghost3.position.x = Math.cos(ghost3Angle) * 5
-  ghost3.position.z = Math.sin(ghost3Angle) * 5
-  ghost3.position.y = Math.sin(elapsedTime) * Math.sin(2.34 * elapsedTime) * Math.sin(3.45 * elapsedTime)
+  const ghost3Angle = elapsedTime * 0.23;
+  ghost3.position.x = Math.cos(ghost3Angle) * 5;
+  ghost3.position.z = Math.sin(ghost3Angle) * 5;
+  ghost3.position.y =
+    Math.sin(elapsedTime) *
+    Math.sin(2.34 * elapsedTime) *
+    Math.sin(3.45 * elapsedTime);
 
   // Update controls
   controls.update();
