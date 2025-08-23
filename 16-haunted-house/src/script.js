@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { Fog, FogExp2, PCFSoftShadowMap, PointLight } from "three";
 import { Timer } from "three/addons/misc/Timer.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { Sky } from 'three/addons/objects/Sky.js';
+import { Sky } from "three/addons/objects/Sky.js";
 
 /**
  * Base
@@ -307,6 +307,26 @@ scene.add(directionalLight);
 const doorLight = new THREE.PointLight("#ff7d46", 5);
 doorLight.position.set(0, 2.2, 2.5);
 house.add(doorLight);
+let isDoorVisible = true;
+// make door light flicker
+setInterval(() => {
+  setTimeout(() => {
+    isDoorVisible = !isDoorVisible;
+    doorLight.visible = isDoorVisible;
+  }, 100);
+  setTimeout(() => {
+    isDoorVisible = !isDoorVisible;
+    doorLight.visible = isDoorVisible;
+  }, 200);
+  setTimeout(() => {
+    isDoorVisible = !isDoorVisible;
+    doorLight.visible = isDoorVisible;
+  }, 300);
+  setTimeout(() => {
+    isDoorVisible = !isDoorVisible;
+    doorLight.visible = isDoorVisible;
+  }, 400);
+}, 2000);
 
 // Ghosts
 const ghost1 = new PointLight("#8800ff", 6);
@@ -367,56 +387,56 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 /**
  * Shadows
  */
-renderer.shadowMap.enabled = true
-renderer.shadowMap.type = PCFSoftShadowMap
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = PCFSoftShadowMap;
 
 // Cast & receive
-directionalLight.castShadow = true
-ghost1.castShadow = true
-ghost2.castShadow = true
-ghost3.castShadow = true
-walls.castShadow = true
-walls.receiveShadow = true
-roof.castShadow = true
-floor.receiveShadow = true
-graves.children.forEach(grave => {
-    grave.castShadow = true
-    grave.receiveShadow = true
-})
+directionalLight.castShadow = true;
+ghost1.castShadow = true;
+ghost2.castShadow = true;
+ghost3.castShadow = true;
+walls.castShadow = true;
+walls.receiveShadow = true;
+roof.castShadow = true;
+floor.receiveShadow = true;
+graves.children.forEach((grave) => {
+  grave.castShadow = true;
+  grave.receiveShadow = true;
+});
 
 // Mapping
-directionalLight.shadow.mapSize.set(256, 256)
-directionalLight.shadow.camera.top = 8
-directionalLight.shadow.camera.right = 8
-directionalLight.shadow.camera.bottom = -8
-directionalLight.shadow.camera.left = -8
-directionalLight.shadow.camera.near = 1
-directionalLight.shadow.camera.far = 20
+directionalLight.shadow.mapSize.set(256, 256);
+directionalLight.shadow.camera.top = 8;
+directionalLight.shadow.camera.right = 8;
+directionalLight.shadow.camera.bottom = -8;
+directionalLight.shadow.camera.left = -8;
+directionalLight.shadow.camera.near = 1;
+directionalLight.shadow.camera.far = 20;
 
-ghost1.shadow.mapSize.set(256, 256)
-ghost1.shadow.camera.far = 10
-ghost2.shadow.mapSize.set(256, 256)
-ghost2.shadow.camera.far = 10
-ghost3.shadow.mapSize.set(256, 256)
-ghost3.shadow.camera.far = 10
+ghost1.shadow.mapSize.set(256, 256);
+ghost1.shadow.camera.far = 10;
+ghost2.shadow.mapSize.set(256, 256);
+ghost2.shadow.camera.far = 10;
+ghost3.shadow.mapSize.set(256, 256);
+ghost3.shadow.camera.far = 10;
 
 /**
  * Sky
  */
-const sky = new Sky()
-sky.scale.setScalar(100)
-scene.add(sky)
-sky.material.uniforms['turbidity'].value = 10
-sky.material.uniforms['rayleigh'].value = 3
-sky.material.uniforms['mieCoefficient'].value = 0.1
-sky.material.uniforms['mieDirectionalG'].value = 0.95
-sky.material.uniforms['sunPosition'].value.set(0.3, -0.038, -0.95)
+const sky = new Sky();
+sky.scale.setScalar(100);
+scene.add(sky);
+sky.material.uniforms["turbidity"].value = 10;
+sky.material.uniforms["rayleigh"].value = 3;
+sky.material.uniforms["mieCoefficient"].value = 0.1;
+sky.material.uniforms["mieDirectionalG"].value = 0.95;
+sky.material.uniforms["sunPosition"].value.set(0.3, -0.038, -0.95);
 
 /**
  * Fog
  */
 // scene.fog = new Fog('#ff0000', 1, 13)
-scene.fog = new FogExp2('#04343f', 0.1)
+scene.fog = new FogExp2("#04343f", 0.1);
 
 /**
  * Animate
