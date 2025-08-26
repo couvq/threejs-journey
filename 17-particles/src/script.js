@@ -1,6 +1,6 @@
 import GUI from "lil-gui";
 import * as THREE from "three";
-import { Points, PointsMaterial, SphereGeometry } from "three";
+import { BufferAttribute, BufferGeometry, Points, PointsMaterial } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 /**
@@ -23,9 +23,15 @@ const textureLoader = new THREE.TextureLoader();
 /**
  * Particles
  */
-const particlesGeometry = new SphereGeometry(1, 32, 32);
+const particlesGeometry = new BufferGeometry()
+const count = 5000 // how many partices we want to represent
+const positions = new Float32Array(count * 3) // multiplied by three because each grouping of 3 in the array represents x, y, z coordinates
+for(let i = 0 ; i < count * 3; i++) {
+    positions[i] = (Math.random() - 0.5) * 10 // random position (x, y, z) between -5 & 5
+}
+particlesGeometry.setAttribute('position', new BufferAttribute(positions, 3))
 const particlesMaterial = new PointsMaterial({
-  size: 0.02,
+  size: 0.1,
   sizeAttenuation: true,
 });
 const particles = new Points(particlesGeometry, particlesMaterial)
