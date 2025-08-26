@@ -1,6 +1,6 @@
 import GUI from "lil-gui";
 import * as THREE from "three";
-import { BoxGeometry, BufferAttribute, BufferGeometry, Color, Mesh, MeshBasicMaterial, Points, PointsMaterial } from "three";
+import { AdditiveBlending, BoxGeometry, BufferAttribute, BufferGeometry, Color, Mesh, MeshBasicMaterial, Points, PointsMaterial } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 /**
@@ -25,7 +25,7 @@ const particleTexture = textureLoader.load('/textures/particles/2.png')
  * Particles
  */
 const particlesGeometry = new BufferGeometry()
-const count = 5000 // how many partices we want to represent
+const count = 20000 // how many partices we want to represent
 const positions = new Float32Array(count * 3) // multiplied by three because each grouping of 3 in the array represents x, y, z coordinates
 for(let i = 0 ; i < count * 3; i++) {
     positions[i] = (Math.random() - 0.5) * 10 // random position (x, y, z) between -5 & 5
@@ -39,13 +39,11 @@ const particlesMaterial = new PointsMaterial({
   transparent: true,
   // alphaTest: 0.001,
   // depthTest: false // not great if other objects in your scene, was able to see particles behind a cube I added
-  depthWrite: false
+  depthWrite: false,
+  blending: AdditiveBlending // when pxs overlap the colors are added, can impact performance
 });
 const particles = new Points(particlesGeometry, particlesMaterial)
 scene.add(particles)
-
-const cube = new Mesh(new BoxGeometry(), new MeshBasicMaterial())
-scene.add(cube)
 
 /**
  * Sizes
