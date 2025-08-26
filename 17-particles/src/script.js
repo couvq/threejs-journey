@@ -114,6 +114,17 @@ const clock = new THREE.Clock();
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
 
+  // update particles
+  // particles.rotation.y = elapsedTime * 0.2
+
+  for(let i = 0; i < count; i++) {
+    const i3 = i * 3
+    const yPos = i3 + 1
+    const x = particlesGeometry.attributes.position.array[i3]
+    particlesGeometry.attributes.position.array[yPos] = Math.sin(elapsedTime + x) // updating the entire buffer array on each frame is bad for performance!
+  }
+  particlesGeometry.attributes.position.needsUpdate = true
+
   // Update controls
   controls.update();
 
