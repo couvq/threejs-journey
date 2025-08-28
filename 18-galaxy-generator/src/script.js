@@ -1,6 +1,12 @@
 import GUI from "lil-gui";
 import * as THREE from "three";
-import { AdditiveBlending, BufferAttribute, BufferGeometry, Points, PointsMaterial } from "three";
+import {
+  AdditiveBlending,
+  BufferAttribute,
+  BufferGeometry,
+  Points,
+  PointsMaterial,
+} from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 /**
@@ -19,31 +25,58 @@ const scene = new THREE.Scene();
  * Galaxy
  */
 const parameters = {
-  count: 1000,
-  size: 0.02
+  count: 100000,
+  size: 0.01,
 };
 
-const generateGalaxy = () => {
-  const geometry = new BufferGeometry();
-  const positions = new Float32Array(parameters.count * 3);
-  for (let i = 0; i < parameters.count; i++) {
-    const i3 = i * 3;
-    positions[i3] = (Math.random() - 0.5) * 3;
-    positions[i3 + 1] = (Math.random() - 0.5) * 3;
-    positions[i3 + 2] = (Math.random() - 0.5) * 3;
-  }
-  geometry.setAttribute("position", new BufferAttribute(positions, 3));
-  const material = new PointsMaterial({
-    size: parameters.size,
-    sizeAttenuation: true,
-    depthWrite: false,
-    blending: AdditiveBlending
-  });
-  const points = new Points(geometry, material);
-  scene.add(points);
+const createGalaxyGenerator = () => {
+  let geometry = null;
+  let material = null;
+  let points = null;
+
+  return () => {
+    // destroy old galaxy
+    if (points !== null) {
+      geometry.dispose();
+      material.dispose();
+      scene.remove(points);
+    }
+
+    geometry = new BufferGeometry();
+    const positions = new Float32Array(parameters.count * 3);
+    for (let i = 0; i < parameters.count; i++) {
+      const i3 = i * 3;
+      positions[i3] = (Math.random() - 0.5) * 3;
+      positions[i3 + 1] = (Math.random() - 0.5) * 3;
+      positions[i3 + 2] = (Math.random() - 0.5) * 3;
+    }
+    geometry.setAttribute("position", new BufferAttribute(positions, 3));
+    material = new PointsMaterial({
+      size: parameters.size,
+      sizeAttenuation: true,
+      depthWrite: false,
+      blending: AdditiveBlending,
+    });
+    points = new Points(geometry, material);
+    scene.add(points);
+  };
 };
 
+const generateGalaxy = createGalaxyGenerator();
 generateGalaxy();
+
+gui
+  .add(parameters, "count")
+  .min(100)
+  .max(1000000)
+  .step(100)
+  .onFinishChange(generateGalaxy);
+gui
+  .add(parameters, "size")
+  .min(0.001)
+  .max(0.1)
+  .step(0.001)
+  .onFinishChange(generateGalaxy);
 
 /**
  * Sizes
