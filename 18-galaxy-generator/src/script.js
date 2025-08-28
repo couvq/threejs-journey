@@ -27,6 +27,8 @@ const scene = new THREE.Scene();
 const parameters = {
   count: 100000,
   size: 0.01,
+  radius: 5,
+  numBranches: 3,
 };
 
 const createGalaxyGenerator = () => {
@@ -46,9 +48,14 @@ const createGalaxyGenerator = () => {
     const positions = new Float32Array(parameters.count * 3);
     for (let i = 0; i < parameters.count; i++) {
       const i3 = i * 3;
-      positions[i3] = (Math.random() - 0.5) * 3;
-      positions[i3 + 1] = (Math.random() - 0.5) * 3;
-      positions[i3 + 2] = (Math.random() - 0.5) * 3;
+
+      const radius = Math.random() * parameters.radius;
+      const branchAngle =
+        ((i % parameters.numBranches) / parameters.numBranches) * 2 * Math.PI;
+
+      positions[i3] = Math.cos(branchAngle) * radius;
+      positions[i3 + 1] = 0;
+      positions[i3 + 2] = Math.sin(branchAngle) * radius;
     }
     geometry.setAttribute("position", new BufferAttribute(positions, 3));
     material = new PointsMaterial({
@@ -76,6 +83,18 @@ gui
   .min(0.001)
   .max(0.1)
   .step(0.001)
+  .onFinishChange(generateGalaxy);
+gui
+  .add(parameters, "radius")
+  .min(0.01)
+  .max(20)
+  .step(0.01)
+  .onFinishChange(generateGalaxy);
+gui
+  .add(parameters, "numBranches")
+  .min(2)
+  .max(20)
+  .step(1)
   .onFinishChange(generateGalaxy);
 
 /**
