@@ -4,6 +4,7 @@ import {
   AdditiveBlending,
   BufferAttribute,
   BufferGeometry,
+  Color,
   Points,
   PointsMaterial,
 } from "three";
@@ -28,10 +29,12 @@ const parameters = {
   count: 100000,
   size: 0.01,
   radius: 5,
-  numBranches: 3,
-  spin: 1,
+  numBranches: 5,
+  spin: 0.7,
   randomness: 0.2,
   randomnessPower: 3,
+  insideColor: "#ff6030",
+  outsideColor: "#1b3984",
 };
 
 const createGalaxyGenerator = () => {
@@ -49,6 +52,11 @@ const createGalaxyGenerator = () => {
 
     geometry = new BufferGeometry();
     const positions = new Float32Array(parameters.count * 3);
+    const colors = new Float32Array(parameters.count * 3);
+
+    const colorInside = new Color(parameters.insideColor);
+    const colorOutside = new Color(parameters.outsideColor);
+
     for (let i = 0; i < parameters.count; i++) {
       const i3 = i * 3;
 
@@ -76,21 +84,30 @@ const createGalaxyGenerator = () => {
       positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
       positions[i3 + 1] = randomY;
       positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+
+      const mixedColor = colorInside.clone()
+      mixedColor.lerp(colorOutside, radius / parameters.radius)
+      colors[i3] = mixedColor.r;
+      colors[i3 + 1] = mixedColor.g;
+      colors[i3 + 2] = mixedColor.b;
     }
     geometry.setAttribute("position", new BufferAttribute(positions, 3));
+    geometry.setAttribute("color", new BufferAttribute(colors, 3));
     material = new PointsMaterial({
       size: parameters.size,
       sizeAttenuation: true,
       depthWrite: false,
       blending: AdditiveBlending,
+      vertexColors: true,
     });
     points = new Points(geometry, material);
     scene.add(points);
+    return points
   };
 };
 
 const generateGalaxy = createGalaxyGenerator();
-generateGalaxy();
+const points = generateGalaxy();
 
 gui
   .add(parameters, "count")
@@ -134,6 +151,8 @@ gui
   .max(10)
   .step(0.001)
   .onFinishChange(generateGalaxy);
+gui.addColor(parameters, "insideColor").onFinishChange(generateGalaxy);
+gui.addColor(parameters, "outsideColor").onFinishChange(generateGalaxy);
 
 /**
  * Sizes
@@ -192,6 +211,9 @@ const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+
+  // rotate my galaxy
+  points.rotation.y += 0.001
 
   // Update controls
   controls.update();
