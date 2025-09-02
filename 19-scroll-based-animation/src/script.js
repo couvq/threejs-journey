@@ -1,12 +1,16 @@
 import GUI from "lil-gui";
 import * as THREE from "three";
 import {
+  BufferAttribute,
+  BufferGeometry,
   ConeGeometry,
   DirectionalLight,
   Group,
   Mesh,
   MeshToonMaterial,
   NearestFilter,
+  Points,
+  PointsMaterial,
   TextureLoader,
   TorusGeometry,
   TorusKnotGeometry,
@@ -55,6 +59,32 @@ mesh3.position.x = 2;
 scene.add(mesh1, mesh2, mesh3);
 
 const sectionMeshes = [mesh1, mesh2, mesh3];
+
+/**
+ * Particles
+ *
+ * I did this on my own, technically this is not optimized as I am rendering particles outside
+ * of the view. I would just need to set a different x, y, z position if I wanted to optimize this
+ * but skipped it out of laziness.
+ */
+const particlesCount = 2000;
+const positions = new Float32Array(particlesCount * 3);
+for (let i = 0; i < particlesCount; i++) {
+  const i3 = i * 3;
+  const x = i3;
+  const y = i3 + 1;
+  const z = i3 + 2;
+  positions[x] = (Math.random() - 0.5) * 10;
+  positions[y] = (Math.random() - 0.5) * objectsDistance * 5;
+  positions[z] = (Math.random() - 0.5) * 10;
+}
+const bufferGeometry = new BufferGeometry();
+bufferGeometry.setAttribute("position", new BufferAttribute(positions, 3));
+const pointsMaterial = new PointsMaterial({
+  size: 0.02,
+});
+const particles = new Points(bufferGeometry, pointsMaterial);
+scene.add(particles);
 
 const directionalLight = new DirectionalLight("#ffffff", 3);
 directionalLight.position.set(1, 1, 0);
@@ -148,8 +178,10 @@ const tick = () => {
   camera.position.y = (-scrollY / sizes.height) * objectsDistance;
   const parallaxX = cursor.x;
   const parallaxY = -cursor.y;
-  cameraGroup.position.x += (parallaxX - cameraGroup.position.x) * 1 * deltaTime;
-  cameraGroup.position.y += (parallaxY - cameraGroup.position.y) * 1 * deltaTime;
+  cameraGroup.position.x +=
+    (parallaxX - cameraGroup.position.x) * 1 * deltaTime;
+  cameraGroup.position.y +=
+    (parallaxY - cameraGroup.position.y) * 1 * deltaTime;
   // Render
   renderer.render(scene, camera);
 
