@@ -57,7 +57,7 @@ const defaultContactMaterial = new ContactMaterial(
   }
 );
 world.addContactMaterial(defaultContactMaterial);
-world.defaultContactMaterial = defaultContactMaterial
+world.defaultContactMaterial = defaultContactMaterial;
 
 const sphereShape = new Sphere(0.5);
 const sphereBody = new Body({
@@ -65,6 +65,7 @@ const sphereBody = new Body({
   position: new Vec3(0, 3, 0),
   shape: sphereShape,
 });
+sphereBody.applyLocalForce(new Vec3(150, 0, 0), new Vec3(0, 0, 0));
 world.addBody(sphereBody);
 
 const floorShape = new Plane();
@@ -186,6 +187,7 @@ const tick = () => {
   oldElapsedTime = elapsedTime;
 
   // Update physics world
+  sphereBody.applyForce(new Vec3(-0.5, 0, 0), sphereBody.position);
   world.step(1 / 60, deltaTime, 3);
   sphere.position.copy(sphereBody.position);
   // Update controls
