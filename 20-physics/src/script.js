@@ -1,7 +1,4 @@
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import GUI from "lil-gui";
-import CANNON, {
+import {
   Body,
   ContactMaterial,
   Material,
@@ -10,6 +7,9 @@ import CANNON, {
   Vec3,
   World,
 } from "cannon";
+import GUI from "lil-gui";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 /**
  * Debug
@@ -46,32 +46,31 @@ const environmentMapTexture = cubeTextureLoader.load([
 const world = new World();
 world.gravity.set(0, -9.82, 0);
 
-const concreteMaterial = new Material("concrete");
-const plasticMaterial = new Material("plastic");
+const defaultMaterial = new Material("default");
 
 const concretePlasticContactMaterial = new ContactMaterial(
-  concreteMaterial,
-  plasticMaterial,
+  defaultMaterial,
+  defaultMaterial,
   {
     friction: 0.1,
     restitution: 0.7,
   }
 );
-world.addContactMaterial(concretePlasticContactMaterial)
+world.addContactMaterial(concretePlasticContactMaterial);
 
 const sphereShape = new Sphere(0.5);
 const sphereBody = new Body({
   mass: 1,
   position: new Vec3(0, 3, 0),
   shape: sphereShape,
-  material: plasticMaterial,
+  material: defaultMaterial,
 });
 world.addBody(sphereBody);
 
 const floorShape = new Plane();
 const floorBody = new Body({
   shape: floorShape,
-  material: concreteMaterial,
+  material: defaultMaterial,
 });
 floorBody.quaternion.setFromAxisAngle(new Vec3(-1, 0, 0), Math.PI * 0.5);
 world.addBody(floorBody);
@@ -199,5 +198,14 @@ const tick = () => {
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
 };
+
+const reset = {
+  reset: () => {
+    sphere.position.set(0, 3, 0);
+    sphereBody.position.set(0, 3, 0);
+  },
+};
+
+gui.add(reset, "reset");
 
 tick();
