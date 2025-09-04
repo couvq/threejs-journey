@@ -48,7 +48,7 @@ world.gravity.set(0, -9.82, 0);
 
 const defaultMaterial = new Material("default");
 
-const concretePlasticContactMaterial = new ContactMaterial(
+const defaultContactMaterial = new ContactMaterial(
   defaultMaterial,
   defaultMaterial,
   {
@@ -56,21 +56,20 @@ const concretePlasticContactMaterial = new ContactMaterial(
     restitution: 0.7,
   }
 );
-world.addContactMaterial(concretePlasticContactMaterial);
+world.addContactMaterial(defaultContactMaterial);
+world.defaultContactMaterial = defaultContactMaterial
 
 const sphereShape = new Sphere(0.5);
 const sphereBody = new Body({
   mass: 1,
   position: new Vec3(0, 3, 0),
   shape: sphereShape,
-  material: defaultMaterial,
 });
 world.addBody(sphereBody);
 
 const floorShape = new Plane();
 const floorBody = new Body({
   shape: floorShape,
-  material: defaultMaterial,
 });
 floorBody.quaternion.setFromAxisAngle(new Vec3(-1, 0, 0), Math.PI * 0.5);
 world.addBody(floorBody);
