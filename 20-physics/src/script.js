@@ -20,29 +20,6 @@ stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild(stats.dom);
 
 /**
- * Debug
- */
-const gui = new GUI();
-const debugObj = {};
-debugObj.createSphere = () => {
-  createSphere(Math.random() * 0.5, {
-    x: (Math.random() - 0.5) * 3,
-    y: 3,
-    z: (Math.random() - 0.5) * 3,
-  });
-};
-gui.add(debugObj, "createSphere").name("Add sphere");
-
-debugObj.createBox = () => {
-  createBox(Math.random(), Math.random(), Math.random(), {
-    x: (Math.random() - 0.5) * 3,
-    y: 3,
-    z: (Math.random() - 0.5) * 3,
-  });
-};
-gui.add(debugObj, "createBox").name("Add Box");
-
-/**
  * Base
  */
 // Canvas
@@ -292,5 +269,37 @@ const tick = () => {
   window.requestAnimationFrame(tick);
   stats.end();
 };
+
+/**
+ * Debug
+ */
+const gui = new GUI();
+const debugObj = {};
+debugObj.createSphere = () => {
+  createSphere(Math.random() * 0.5, {
+    x: (Math.random() - 0.5) * 3,
+    y: 3,
+    z: (Math.random() - 0.5) * 3,
+  });
+};
+gui.add(debugObj, "createSphere").name("Add sphere");
+
+debugObj.createBox = () => {
+  createBox(Math.random(), Math.random(), Math.random(), {
+    x: (Math.random() - 0.5) * 3,
+    y: 3,
+    z: (Math.random() - 0.5) * 3,
+  });
+};
+gui.add(debugObj, "createBox").name("Add Box");
+debugObj.reset = () => {
+  for (const obj of objectsToUpdate) {
+    const { mesh, body } = obj;
+    body.removeEventListener("collide", playHitSound);
+    world.remove(body);
+    scene.remove(mesh);
+  }
+};
+gui.add(debugObj, "reset").name("Reset");
 
 tick();
