@@ -9,12 +9,22 @@ import {
 } from "cannon";
 import GUI from "lil-gui";
 import * as THREE from "three";
+import { Mesh, MeshStandardMaterial, SphereGeometry } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 /**
  * Debug
  */
 const gui = new GUI();
+const debugObj = {};
+debugObj.createSphere = () => {
+  createSphere(Math.random() * 0.5, {
+    x: (Math.random() - 0.5) * 3,
+    y: 3,
+    z: (Math.random() - 0.5) * 3,
+  });
+};
+gui.add(debugObj, "createSphere").name("Add sphere");
 
 /**
  * Base
@@ -59,37 +69,12 @@ const defaultContactMaterial = new ContactMaterial(
 world.addContactMaterial(defaultContactMaterial);
 world.defaultContactMaterial = defaultContactMaterial;
 
-const sphereShape = new Sphere(0.5);
-const sphereBody = new Body({
-  mass: 1,
-  position: new Vec3(0, 3, 0),
-  shape: sphereShape,
-});
-sphereBody.applyLocalForce(new Vec3(150, 0, 0), new Vec3(0, 0, 0));
-world.addBody(sphereBody);
-
 const floorShape = new Plane();
 const floorBody = new Body({
   shape: floorShape,
 });
 floorBody.quaternion.setFromAxisAngle(new Vec3(-1, 0, 0), Math.PI * 0.5);
 world.addBody(floorBody);
-
-/**
- * Test sphere
- */
-const sphere = new THREE.Mesh(
-  new THREE.SphereGeometry(0.5, 32, 32),
-  new THREE.MeshStandardMaterial({
-    metalness: 0.3,
-    roughness: 0.4,
-    envMap: environmentMapTexture,
-    envMapIntensity: 0.5,
-  })
-);
-sphere.castShadow = true;
-sphere.position.y = 0.5;
-scene.add(sphere);
 
 /**
  * Floor
@@ -176,6 +161,42 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 /**
+ * Utils
+ */
+const objectsToUpdate = [];
+const sphereGeometry = new SphereGeometry(1, 20, 20);
+const sphereMaterial = new MeshStandardMaterial({
+  metalness: 0.3,
+  roughness: 0.4,
+  envMap: environmentMapTexture,
+});
+
+const createSphere = (radius, position) => {
+  const mesh = new Mesh(sphereGeometry, sphereMaterial);
+  mesh.castShadow = true;
+  mesh.scale.set(radius, radius, radius)
+  mesh.position.copy(position);
+  scene.add(mesh);
+
+  const shape = new Sphere(radius);
+  const body = new Body({
+    mass: 1,
+    position: new Vec3(0, 3, 0),
+    shape,
+    material: defaultMaterial,
+  });
+  body.position.copy(position);
+  world.addBody(body);
+
+  objectsToUpdate.push({
+    mesh,
+    body,
+  });
+};
+
+createSphere(0.5, { x: 0, y: 3, z: 0 });
+
+/**
  * Animate
  */
 const clock = new THREE.Clock();
@@ -187,9 +208,12 @@ const tick = () => {
   oldElapsedTime = elapsedTime;
 
   // Update physics world
-  sphereBody.applyForce(new Vec3(-0.5, 0, 0), sphereBody.position);
   world.step(1 / 60, deltaTime, 3);
-  sphere.position.copy(sphereBody.position);
+  for (const obj of objectsToUpdate) {
+    const { mesh, body } = obj;
+    mesh.position.copy(body.position);
+  }
+
   // Update controls
   controls.update();
 
@@ -199,14 +223,5 @@ const tick = () => {
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
 };
-
-const reset = {
-  reset: () => {
-    sphere.position.set(0, 3, 0);
-    sphereBody.position.set(0, 3, 0);
-  },
-};
-
-gui.add(reset, "reset");
 
 tick();
