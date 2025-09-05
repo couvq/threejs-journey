@@ -12,6 +12,11 @@ import GUI from "lil-gui";
 import * as THREE from "three";
 import { BoxGeometry, Mesh, MeshStandardMaterial, SphereGeometry } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import Stats from "stats.js";
+
+const stats = new Stats();
+stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+document.body.appendChild(stats.dom);
 
 /**
  * Debug
@@ -243,6 +248,7 @@ const clock = new THREE.Clock();
 let oldElapsedTime = 0;
 
 const tick = () => {
+  stats.begin();
   const elapsedTime = clock.getElapsedTime();
   const deltaTime = elapsedTime - oldElapsedTime;
   oldElapsedTime = elapsedTime;
@@ -252,7 +258,7 @@ const tick = () => {
   for (const obj of objectsToUpdate) {
     const { mesh, body } = obj;
     mesh.position.copy(body.position);
-    mesh.quaternion.copy(body.quaternion)
+    mesh.quaternion.copy(body.quaternion);
   }
 
   // Update controls
@@ -263,6 +269,7 @@ const tick = () => {
 
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
+  stats.end();
 };
 
 tick();
