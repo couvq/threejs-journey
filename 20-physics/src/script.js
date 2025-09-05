@@ -4,6 +4,7 @@ import {
   ContactMaterial,
   Material,
   Plane,
+  SAPBroadphase,
   Sphere,
   Vec3,
   World,
@@ -70,6 +71,9 @@ const environmentMapTexture = cubeTextureLoader.load([
  */
 const world = new World();
 world.gravity.set(0, -9.82, 0);
+// better for performance but can lead to bugs if objects move too fast
+world.broadphase = new SAPBroadphase(world);
+world.allowSleep = true
 
 const defaultMaterial = new Material("default");
 
