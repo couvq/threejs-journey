@@ -1,5 +1,6 @@
 import {
   Body,
+  Box,
   ContactMaterial,
   Material,
   Plane,
@@ -9,7 +10,7 @@ import {
 } from "cannon";
 import GUI from "lil-gui";
 import * as THREE from "three";
-import { Mesh, MeshStandardMaterial, SphereGeometry } from "three";
+import { BoxGeometry, Mesh, MeshStandardMaterial, SphereGeometry } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 /**
@@ -25,6 +26,15 @@ debugObj.createSphere = () => {
   });
 };
 gui.add(debugObj, "createSphere").name("Add sphere");
+
+debugObj.createBox = () => {
+  createBox(Math.random(), Math.random(), Math.random(), {
+    x: (Math.random() - 0.5) * 3,
+    y: 3,
+    z: (Math.random() - 0.5) * 3,
+  });
+};
+gui.add(debugObj, "createBox").name("Add Box");
 
 /**
  * Base
@@ -174,11 +184,41 @@ const sphereMaterial = new MeshStandardMaterial({
 const createSphere = (radius, position) => {
   const mesh = new Mesh(sphereGeometry, sphereMaterial);
   mesh.castShadow = true;
-  mesh.scale.set(radius, radius, radius)
+  mesh.scale.set(radius, radius, radius);
   mesh.position.copy(position);
   scene.add(mesh);
 
   const shape = new Sphere(radius);
+  const body = new Body({
+    mass: 1,
+    position: new Vec3(0, 3, 0),
+    shape,
+    material: defaultMaterial,
+  });
+  body.position.copy(position);
+  world.addBody(body);
+
+  objectsToUpdate.push({
+    mesh,
+    body,
+  });
+};
+
+const boxGeometry = new BoxGeometry(1, 1, 1);
+const boxMaterial = new MeshStandardMaterial({
+  metalness: 0.3,
+  roughness: 0.4,
+  envMap: environmentMapTexture,
+});
+
+const createBox = (width, height, depth, position) => {
+  const mesh = new Mesh(boxGeometry, boxMaterial);
+  mesh.castShadow = true;
+  mesh.scale.set(width, height, depth);
+  mesh.position.copy(position);
+  scene.add(mesh);
+
+  const shape = new Box(new Vec3(width * 0.5, height * 0.5, depth * 0.5));
   const body = new Body({
     mass: 1,
     position: new Vec3(0, 3, 0),
@@ -212,6 +252,7 @@ const tick = () => {
   for (const obj of objectsToUpdate) {
     const { mesh, body } = obj;
     mesh.position.copy(body.position);
+    mesh.quaternion.copy(body.quaternion)
   }
 
   // Update controls
