@@ -1,19 +1,19 @@
 import {
-  Body,
-  Box,
-  ContactMaterial,
-  Material,
-  Plane,
-  SAPBroadphase,
-  Sphere,
-  Vec3,
-  World,
+    Body,
+    Box,
+    ContactMaterial,
+    Material,
+    Plane,
+    SAPBroadphase,
+    Sphere,
+    Vec3,
+    World
 } from "cannon";
 import GUI from "lil-gui";
+import Stats from "stats.js";
 import * as THREE from "three";
 import { BoxGeometry, Mesh, MeshStandardMaterial, SphereGeometry } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import Stats from "stats.js";
 
 const stats = new Stats();
 stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -299,6 +299,8 @@ debugObj.reset = () => {
     world.remove(body);
     scene.remove(mesh);
   }
+
+  objectsToUpdate.splice(0, objectsToUpdate.length)å
 };
 gui.add(debugObj, "reset").name("Reset");
 
