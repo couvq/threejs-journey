@@ -52,6 +52,23 @@ const canvas = document.querySelector("canvas.webgl");
 const scene = new THREE.Scene();
 
 /**
+ * Sounds
+ */
+const hitSound = new Audio("/sounds/hit.mp3");
+const playHitSound = (collisionEvent) => {
+  const impactStrength = collisionEvent.contact.getImpactVelocityAlongNormal();
+  if (impactStrength > 1.5) {
+    /**
+     * Instead of random value we could also throttle this sound from playing with a slight delay
+     * can also scale according to impact strength
+     */
+    hitSound.volume = Math.random();
+    hitSound.currentTime = 0;
+    hitSound.play();
+  }
+};
+
+/**
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
@@ -73,7 +90,7 @@ const world = new World();
 world.gravity.set(0, -9.82, 0);
 // better for performance but can lead to bugs if objects move too fast
 world.broadphase = new SAPBroadphase(world);
-world.allowSleep = true
+world.allowSleep = true;
 
 const defaultMaterial = new Material("default");
 
@@ -235,6 +252,7 @@ const createBox = (width, height, depth, position) => {
     material: defaultMaterial,
   });
   body.position.copy(position);
+  body.addEventListener("collide", playHitSound);
   world.addBody(body);
 
   objectsToUpdate.push({
@@ -242,8 +260,6 @@ const createBox = (width, height, depth, position) => {
     body,
   });
 };
-
-createSphere(0.5, { x: 0, y: 3, z: 0 });
 
 /**
  * Animate
