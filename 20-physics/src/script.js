@@ -1,13 +1,13 @@
 import {
-    Body,
-    Box,
-    ContactMaterial,
-    Material,
-    Plane,
-    SAPBroadphase,
-    Sphere,
-    Vec3,
-    World
+  Body,
+  Box,
+  ContactMaterial,
+  Material,
+  Plane,
+  SAPBroadphase,
+  Sphere,
+  Vec3,
+  World,
 } from "cannon";
 import GUI from "lil-gui";
 import Stats from "stats.js";
@@ -300,7 +300,7 @@ debugObj.reset = () => {
     scene.remove(mesh);
   }
 
-  objectsToUpdate.splice(0, objectsToUpdate.length)å
+  objectsToUpdate.splice(0, objectsToUpdate.length);
 };
 gui.add(debugObj, "reset").name("Reset");
 
