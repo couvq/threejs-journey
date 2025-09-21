@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import GUI from "lil-gui";
-import { Raycaster, Vector3 } from "three";
+import { Raycaster, Vector2, Vector3 } from "three";
 
 /**
  * Base
@@ -65,6 +65,17 @@ window.addEventListener("resize", () => {
 });
 
 /**
+ * Mouse
+ */
+const mouse = new Vector2();
+
+window.addEventListener("mousemove", (e) => {
+  mouse.x = (e.clientX / sizes.width) * 2 - 1;
+  mouse.y = (e.clientY / sizes.height) * -2 + 1;
+  console.log(mouse)
+});
+
+/**
  * Camera
  */
 // Base camera
@@ -113,8 +124,8 @@ const tick = () => {
   const objectsToTest = [object1, object2, object3];
   const intersects = raycaster.intersectObjects(objectsToTest);
   // reset objects to red (non-intersecting)
-  for(const object of objectsToTest) {
-    object.material.color.set('red')
+  for (const object of objectsToTest) {
+    object.material.color.set("red");
   }
 
   // apply blue color to intersecting objects
